@@ -1,5 +1,6 @@
 // app/page.tsx
 import Link from 'next/link'
+import ExpandableCard from '@/components/ExpandableCard'
 import {
   ChevronRight,
   Calendar,
@@ -255,12 +256,13 @@ function InfoPPDB() {
 
           {/* Left: Brochure image */}
           <div className="lg:col-span-5">
-            <div className={`bg-white border-2 border-[#e8d9a0] rounded-3xl p-4 ${cardShadow} rotate-[-1.5deg] hover:rotate-0 transition-all duration-300`}>
+            <ExpandableCard>
               <ImagePlaceholder
                 label="Foto Alur Pendaftaran / Brosur PPDB Sekolah"
-                aspect="aspect-[3/4] max-h-[500px]"
+                aspect="flex-1 w-full h-full border-none"
+                className="rounded-2xl"
               />
-            </div>
+            </ExpandableCard>
           </div>
 
           {/* Right: 4-step list */}
