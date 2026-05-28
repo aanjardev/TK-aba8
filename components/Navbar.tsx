@@ -77,16 +77,18 @@ const Navbar = () => {
                       <ChevronDown size={14} className="opacity-70 stroke-[2.5]" />
                     </button>
                     {openDropdown === key && (
-                      <div className="absolute top-full left-0 w-48 bg-white border border-gray-100 rounded-xl shadow-md py-2 mt-1 z-50">
-                        {item.submenu.map((sub) => (
-                          <Link
-                            key={sub.name}
-                            href={sub.href}
-                            className="block px-4 py-2 text-xs font-bold text-gray-600 hover:bg-[#e6f4ec] hover:text-[#00923f] transition duration-150"
-                          >
-                            {sub.name}
-                          </Link>
-                        ))}
+                      <div className="absolute top-full left-0 pt-1 z-50">
+                        <div className="w-48 bg-white border border-gray-100 rounded-xl shadow-md py-2">
+                          {item.submenu.map((sub) => (
+                            <Link
+                              key={sub.name}
+                              href={sub.href}
+                              className="block px-4 py-2 text-xs font-bold text-gray-600 hover:bg-[#e6f4ec] hover:text-[#00923f] transition duration-150"
+                            >
+                              {sub.name}
+                            </Link>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </>
