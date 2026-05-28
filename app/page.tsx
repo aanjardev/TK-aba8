@@ -1,6 +1,7 @@
 // app/page.tsx
 import Link from 'next/link'
 import ExpandableCard from '@/components/ExpandableCard'
+import { Hl, Eyebrow, SeeMoreLink, cardShadow, cardShadowHover, ImagePlaceholder } from '@/components/SharedUI'
 import {
   ChevronRight,
   Calendar,
@@ -22,65 +23,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 
-// ─── Shared helpers ──────────────────────────────────────────────────────────
-
 /** Subtle underline-highlight on a span of text */
-function Hl({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="relative inline-block text-[#00923f] after:content-[''] after:absolute after:left-0 after:bottom-[3px] after:w-full after:h-2.5 after:bg-[#00923f]/10 after:z-[-1] px-0.5">
-      {children}
-    </span>
-  )
-}
-
-/** Section eyebrow label */
-function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="inline-flex items-center gap-2 text-[11px] font-extrabold text-[#00923f] uppercase tracking-widest mb-3">
-      <span className="w-4 h-[2px] bg-[#00923f] rounded-full inline-block" />
-      {children}
-    </p>
-  )
-}
-
-/** "Lihat Selengkapnya" ghost link — placed near section header */
-function SeeMoreLink({ href, label = 'Lihat Selengkapnya' }: { href: string; label?: string }) {
-  return (
-    <Link
-      href={href}
-      className="inline-flex items-center gap-1.5 text-[#00923f] hover:text-[#007f36] font-bold text-xs uppercase tracking-wider border border-[#00923f]/30 hover:border-[#00923f] rounded-full px-4 py-2 transition-all duration-200 hover:bg-[#00923f]/5"
-    >
-      {label}
-      <ArrowRight size={13} className="stroke-[2.5]" />
-    </Link>
-  )
-}
-
-/** Card elevation class — strong but elegant */
-const cardShadow = 'shadow-[0_4px_6px_-1px_rgba(0,0,0,0.07),0_10px_30px_-8px_rgba(0,0,0,0.1)]'
-const cardShadowHover = 'hover:shadow-[0_8px_20px_-4px_rgba(0,0,0,0.1),0_20px_40px_-8px_rgba(0,0,0,0.13)]'
-
-// Reusable Image Placeholder Component
-function ImagePlaceholder({
-  label,
-  aspect = 'aspect-video',
-  className = '',
-}: {
-  label: string
-  aspect?: string
-  className?: string
-}) {
-  return (
-    <div className={`bg-[#f0f7f3] border border-dashed border-[#b8d9c6] rounded-2xl flex flex-col items-center justify-center p-6 text-center select-none ${aspect} ${className}`}>
-      <div className="w-12 h-12 rounded-xl bg-white border border-[#d0e8da] flex items-center justify-center text-[#00923f] mb-3 shadow-sm">
-        <ImageIcon size={20} className="opacity-70" />
-      </div>
-      <span className="text-sm font-semibold text-[#4a7060] leading-tight">{label}</span>
-      <span className="text-xs text-[#8aaa97] mt-1 font-medium">Image Placeholder</span>
-    </div>
-  )
-}
-
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default async function Home() {
