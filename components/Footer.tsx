@@ -51,16 +51,16 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Tentang Kami */}
           <div>
-            <h4 className="font-bold text-sm text-white uppercase tracking-wider mb-6">Tautan Cepat</h4>
+            <h4 className="font-bold text-sm text-white uppercase tracking-wider mb-6">Tentang Kami</h4>
             <ul className="space-y-3">
               {[
-                { name: 'Beranda', href: '/' },
-                { name: 'Tentang Sekolah', href: '/tentang' },
-                { name: 'Program Unggulan', href: '/program' },
-                { name: 'Prestasi Siswa', href: '/prestasi' },
-                { name: 'Hubungi Kami', href: '/kontak' }
+                { name: 'Profil Sekolah', href: '/tentang/profil' },
+                { name: 'Visi & Misi', href: '/tentang/visi-misi' },
+                { name: 'Sejarah Perjalanan', href: '/tentang/sejarah' },
+                { name: 'Fasilitas Belajar', href: '/tentang/fasilitas' },
+                { name: 'Guru & Staf', href: '/guru' },
               ].map((item) => (
                 <li key={item.name}>
                   <Link href={item.href} className="text-sm text-gray-400 hover:text-green-500 transition duration-150 font-medium">
@@ -71,14 +71,15 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Information Links */}
+          {/* Program & Info */}
           <div>
-            <h4 className="font-bold text-sm text-white uppercase tracking-wider mb-6">Informasi</h4>
+            <h4 className="font-bold text-sm text-white uppercase tracking-wider mb-6">Program & Info</h4>
             <ul className="space-y-3">
               {[
-                { name: 'Visi & Misi', href: '/tentang/visi-misi' },
-                { name: 'Kurikulum', href: '/kurikulum' },
-                { name: 'Kegiatan Siswa', href: '/kegiatan' },
+                { name: 'Kelompok Bermain', href: '/program/playgroup' },
+                { name: 'Taman Kanak-Kanak A', href: '/program/tk-a' },
+                { name: 'Taman Kanak-Kanak B', href: '/program/tk-b' },
+                { name: 'Prestasi', href: '/prestasi' },
                 { name: 'Pendaftaran PPDB', href: '/pendaftaran' }
               ].map((item) => (
                 <li key={item.name}>

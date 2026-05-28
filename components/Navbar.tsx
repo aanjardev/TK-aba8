@@ -62,7 +62,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center space-x-2">
+          <div className="hidden xl:flex items-center space-x-2">
             {Object.entries(menuItems).map(([key, item]) => (
               <div
                 key={key}
@@ -111,7 +111,7 @@ const Navbar = () => {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 text-gray-500 rounded-xl hover:bg-gray-50 transition"
+            className="xl:hidden p-2 text-gray-500 rounded-xl hover:bg-gray-50 transition"
             aria-label="Toggle Menu"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -120,7 +120,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="lg:hidden py-4 border-t border-gray-100 max-h-[80vh] overflow-y-auto">
+          <div className="xl:hidden py-4 border-t border-gray-100 max-h-[80vh] overflow-y-auto">
             {Object.entries(menuItems).map(([key, item]) => (
               <div key={key} className="py-1">
                 {item.submenu ? (
