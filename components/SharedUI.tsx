@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, Image as ImageIcon } from 'lucide-react'
+import { Image as ImageIcon } from 'lucide-react'
 
 /** Subtle underline-highlight on a span of text */
 export function Hl({ children }: { children: React.ReactNode }) {
@@ -25,10 +25,9 @@ export function SeeMoreLink({ href, label = 'Lihat Selengkapnya' }: { href: stri
   return (
     <Link
       href={href}
-      className="inline-flex items-center gap-1.5 text-[#00923f] hover:text-[#007f36] font-bold text-xs uppercase tracking-wider border border-[#00923f]/30 hover:border-[#00923f] rounded-full px-4 py-2 transition-all duration-200 hover:bg-[#00923f]/5"
+      className="group inline-flex items-center text-sm font-semibold text-[#007f36] transition-colors hover:text-[#005f29]"
     >
-      {label}
-      <ArrowRight size={13} className="stroke-[2.5]" />
+      <span className="border-b border-[#007f36]/35 pb-0.5 transition-colors group-hover:border-[#005f29]">{label}</span>
     </Link>
   )
 }

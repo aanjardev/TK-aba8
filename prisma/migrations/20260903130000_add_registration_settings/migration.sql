@@ -1,0 +1,26 @@
+CREATE TABLE `RegistrationSettings` (
+    `id` VARCHAR(191) NOT NULL DEFAULT 'main',
+    `isOpen` BOOLEAN NOT NULL DEFAULT true,
+    `showHomeSection` BOOLEAN NOT NULL DEFAULT true,
+    `academicYear` VARCHAR(191) NOT NULL,
+    `currentWave` VARCHAR(191) NOT NULL,
+    `quota` VARCHAR(191) NOT NULL,
+    `promoTitle` VARCHAR(191) NOT NULL,
+    `promoDescription` TEXT NOT NULL,
+    `ctaLabel` VARCHAR(191) NOT NULL,
+    `ctaDestination` VARCHAR(191) NOT NULL,
+    `whatsappNumber` VARCHAR(191) NULL,
+    `requirements` JSON NOT NULL,
+    `steps` JSON NOT NULL,
+    `fees` JSON NOT NULL,
+    `feeNote` TEXT NULL,
+    `bankName` VARCHAR(191) NULL,
+    `bankAccount` VARCHAR(191) NULL,
+    `bankHolder` VARCHAR(191) NULL,
+    `brochureFile` VARCHAR(191) NULL,
+    `registrationFormFile` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

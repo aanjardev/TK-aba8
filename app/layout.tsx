@@ -1,20 +1,8 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter, Poppins } from 'next/font/google'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
+import { getSiteSettings } from '@/lib/site-settings'
 
-const inter = Inter({ subsets: ['latin'] })
-const poppins = Poppins({ 
-  weight: ['300', '400', '600', '700', '800'],
-  subsets: ['latin'],
-  variable: '--font-poppins'
-})
-
-export const metadata: Metadata = {
-  title: 'TK ABA 8 - Sekolah Anak Ceria',
-  description: 'TK ABA 8 adalah tempat belajar yang menyenangkan untuk anak usia dini',
-}
+export async function generateMetadata():Promise<Metadata>{const site=await getSiteSettings();return{title:{default:site.shortName,template:`%s | ${site.shortName}`},description:site.longName,icons:site.favicon?{icon:site.favicon}:undefined}}
 
 export default function RootLayout({
   children,
@@ -23,12 +11,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body className={`${inter.className} ${poppins.variable}`}>
-        <Navbar />
-        <main className="min-h-screen pt-16">
-          {children}
-        </main>
-        <Footer />
+      <body>
+        {children}
       </body>
     </html>
   )

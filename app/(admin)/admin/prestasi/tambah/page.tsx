@@ -1,0 +1,1 @@
+import AchievementForm from'@/components/admin/AchievementForm';import{createAchievement}from'../actions';export default function AddAchievement(){return <AchievementForm action={createAchievement}/>}

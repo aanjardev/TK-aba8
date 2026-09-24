@@ -1,0 +1,3 @@
+'use client'
+import { AlertTriangle, RefreshCw } from 'lucide-react'
+export default function AdminError({error,reset}:{error:Error&{digest?:string};reset:()=>void}){return <div className="mx-auto max-w-xl rounded-2xl border border-red-200 bg-white p-8 text-center shadow-sm"><AlertTriangle className="mx-auto text-red-500" size={44}/><h2 className="mt-4 text-xl font-bold text-slate-900">Perubahan belum berhasil disimpan</h2><p className="mt-2 text-sm text-slate-600">{error.message||'Terjadi kendala pada server. Data lama tetap aman.'}</p><button onClick={reset} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white"><RefreshCw size={17}/>Coba lagi</button></div>}

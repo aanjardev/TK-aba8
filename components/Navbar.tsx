@@ -2,7 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Menu, X, ChevronDown, GraduationCap } from 'lucide-react'
+import Image from 'next/image'
+import type { SiteSettingsData } from '@/lib/site-settings'
 
 interface SubMenuItem {
   name: string
@@ -15,7 +18,8 @@ interface MenuItem {
   submenu?: SubMenuItem[]
 }
 
-const Navbar = () => {
+const Navbar = ({site}:{site:SiteSettingsData}) => {
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
 
@@ -34,6 +38,7 @@ const Navbar = () => {
     guru: { name: 'Guru & Staf', href: '/guru' },
     program: {
       name: 'Program',
+      href: '/program',
       submenu: [
         { name: 'Playgroup', href: '/program/playgroup' },
         { name: 'TK A', href: '/program/tk-a' },
@@ -42,9 +47,18 @@ const Navbar = () => {
       ]
     },
     prestasi: { name: 'Prestasi', href: '/prestasi' },
+    berita: { name: 'Berita', href: '/berita' },
     kontak: { name: 'Hubungi Kami', href: '/kontak' },
     pendaftaran: { name: 'Pendaftaran', href: '/pendaftaran' },
   }
+
+  const isHrefActive = (href: string) => href === '/'
+    ? pathname === '/'
+    : pathname === href || pathname.startsWith(`${href}/`)
+
+  const isItemActive = (item: MenuItem) => Boolean(
+    (item.href && isHrefActive(item.href)) || item.submenu?.some((sub) => isHrefActive(sub.href))
+  )
 
   return (
     <nav className="bg-white border-b border-gray-100 fixed w-full top-0 z-50">
@@ -52,18 +66,20 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="bg-[#e6f4ec] text-[#00923f] rounded-xl p-2.5 transition-colors group-hover:bg-[#00923f]/15">
-              <GraduationCap size={24} className="stroke-[2.5]" />
+            <div className="relative flex h-11 w-11 items-center justify-center overflow-hidden bg-[#e6f4ec] text-[#00923f] rounded-xl transition-colors group-hover:bg-[#00923f]/15">
+              {site.logo?<Image src={site.logo} alt={`Logo ${site.shortName}`} fill sizes="44px" className="object-contain p-1"/>:<GraduationCap size={24} className="stroke-[2.5]" />}
             </div>
             <div className="flex flex-col">
-              <span className="text-lg font-extrabold text-[#00923f] tracking-tight leading-none font-poppins">TK ABA 8 Kepanjen</span>
-              <span className="text-[10px] text-gray-400 mt-1 font-semibold uppercase tracking-wider">Aisyiyah Bustanul Athfal</span>
+              <span className="text-lg font-extrabold text-[#00923f] tracking-tight leading-none font-poppins">{site.shortName}</span>
+              <span className="text-[10px] text-gray-400 mt-1 font-semibold tracking-wide line-clamp-1">{site.longName}</span>
             </div>
           </Link>
 
           {/* Desktop Menu */}
           <div className="hidden xl:flex items-center space-x-2">
-            {Object.entries(menuItems).map(([key, item]) => (
+            {Object.entries(menuItems).map(([key, item]) => {
+              const isActive = isItemActive(item)
+              return (
               <div
                 key={key}
                 className="relative"
@@ -72,22 +88,26 @@ const Navbar = () => {
               >
                 {item.submenu ? (
                   <>
-                    <button className="flex items-center space-x-1 px-4 py-2.5 text-sm font-bold text-gray-600 hover:text-[#00923f] rounded-lg transition duration-200">
+                    <button aria-current={isActive ? 'page' : undefined} className={`flex items-center space-x-1 px-4 py-2.5 text-sm font-bold rounded-lg transition duration-200 ${isActive ? 'bg-[#e6f4ec] text-[#00923f]' : 'text-gray-600 hover:text-[#00923f]'}`}>
                       <span>{item.name}</span>
                       <ChevronDown size={14} className="opacity-70 stroke-[2.5]" />
                     </button>
                     {openDropdown === key && (
                       <div className="absolute top-full left-0 pt-1 z-50">
                         <div className="w-48 bg-white border border-gray-100 rounded-xl shadow-md py-2">
-                          {item.submenu.map((sub) => (
+                          {item.submenu.map((sub) => {
+                            const isSubActive = isHrefActive(sub.href)
+                            return (
                             <Link
                               key={sub.name}
                               href={sub.href}
-                              className="block px-4 py-2 text-xs font-bold text-gray-600 hover:bg-[#e6f4ec] hover:text-[#00923f] transition duration-150"
+                              aria-current={isSubActive ? 'page' : undefined}
+                              className={`block px-4 py-2 text-xs font-bold transition duration-150 ${isSubActive ? 'bg-[#e6f4ec] text-[#00923f]' : 'text-gray-600 hover:bg-[#e6f4ec] hover:text-[#00923f]'}`}
                             >
                               {sub.name}
                             </Link>
-                          ))}
+                            )
+                          })}
                         </div>
                       </div>
                     )}
@@ -95,17 +115,19 @@ const Navbar = () => {
                 ) : (
                   <Link
                     href={item.href || '#'}
+                    aria-current={isActive ? 'page' : undefined}
                     className={`px-4 py-2.5 text-sm font-bold rounded-lg transition duration-200 ${
                       key === 'pendaftaran'
-                        ? 'bg-[#00923f] text-white hover:bg-[#007b34] px-6 py-3 rounded-full shadow-sm ml-2 uppercase text-xs tracking-wider ring-offset-2 hover:ring-2 hover:ring-[#00923f]'
-                        : 'text-gray-600 hover:text-[#00923f]'
+                        ? `bg-[#00923f] text-white hover:bg-[#007b34] px-6 py-3 rounded-full shadow-sm ml-2 uppercase text-xs tracking-wider ring-offset-2 hover:ring-2 hover:ring-[#00923f] ${isActive ? 'ring-2 ring-[#00923f]' : ''}`
+                        : isActive ? 'bg-[#e6f4ec] text-[#00923f]' : 'text-gray-600 hover:text-[#00923f]'
                     }`}
                   >
                     {item.name}
                   </Link>
                 )}
               </div>
-            ))}
+              )
+            })}
           </div>
 
           {/* Mobile menu button */}
@@ -121,39 +143,47 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isOpen && (
           <div className="xl:hidden py-4 border-t border-gray-100 max-h-[80vh] overflow-y-auto">
-            {Object.entries(menuItems).map(([key, item]) => (
+            {Object.entries(menuItems).map(([key, item]) => {
+              const isActive = isItemActive(item)
+              return (
               <div key={key} className="py-1">
                 {item.submenu ? (
                   <>
                     <button
                       onClick={() => setOpenDropdown(openDropdown === key ? null : key)}
-                      className="flex items-center justify-between w-full px-4 py-2.5 text-sm font-bold text-gray-600 hover:text-[#00923f] transition"
+                      aria-current={isActive ? 'page' : undefined}
+                      className={`flex items-center justify-between w-full px-4 py-2.5 text-sm font-bold rounded-lg transition ${isActive ? 'bg-[#e6f4ec] text-[#00923f]' : 'text-gray-600 hover:text-[#00923f]'}`}
                     >
                       <span>{item.name}</span>
                       <ChevronDown size={14} className={`transform transition duration-200 ${openDropdown === key ? 'rotate-180' : ''}`} />
                     </button>
                     {openDropdown === key && (
                       <div className="pl-6 border-l-2 border-[#e6f4ec] ml-4 my-1 space-y-1">
-                        {item.submenu.map((sub) => (
+                        {item.submenu.map((sub) => {
+                          const isSubActive = isHrefActive(sub.href)
+                          return (
                           <Link
                             key={sub.name}
                             href={sub.href}
-                            className="block px-4 py-2 text-xs font-bold text-gray-500 hover:text-[#00923f] transition"
+                            aria-current={isSubActive ? 'page' : undefined}
+                            className={`block rounded-lg px-4 py-2 text-xs font-bold transition ${isSubActive ? 'bg-[#e6f4ec] text-[#00923f]' : 'text-gray-500 hover:text-[#00923f]'}`}
                             onClick={() => setIsOpen(false)}
                           >
                             {sub.name}
                           </Link>
-                        ))}
+                          )
+                        })}
                       </div>
                     )}
                   </>
                 ) : (
                   <Link
                     href={item.href || '#'}
+                    aria-current={isActive ? 'page' : undefined}
                     className={`block px-4 py-2.5 text-sm font-bold ${
                       key === 'pendaftaran'
-                        ? 'bg-[#00923f] text-white rounded-full mx-4 my-2 text-center shadow-sm hover:bg-[#007b34] transition uppercase text-xs tracking-wider py-3'
-                        : 'text-gray-600 hover:text-[#00923f] transition'
+                        ? `bg-[#00923f] text-white rounded-full mx-4 my-2 text-center shadow-sm hover:bg-[#007b34] transition uppercase text-xs tracking-wider py-3 ${isActive ? 'ring-2 ring-[#00923f] ring-offset-2' : ''}`
+                        : isActive ? 'rounded-lg bg-[#e6f4ec] text-[#00923f]' : 'text-gray-600 hover:text-[#00923f] transition'
                     }`}
                     onClick={() => setIsOpen(false)}
                   >
@@ -161,7 +191,8 @@ const Navbar = () => {
                   </Link>
                 )}
               </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>

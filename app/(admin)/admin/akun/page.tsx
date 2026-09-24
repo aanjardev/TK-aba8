@@ -1,0 +1,16 @@
+import { getServerSession } from 'next-auth'
+import { CheckCircle2, Mail, ShieldCheck, Trash2 } from 'lucide-react'
+import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
+import { createUser, deleteUser, updateUser } from './actions'
+import { ConfirmButton, SubmitButton } from '@/components/admin/FormControls'
+
+const field = 'w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-emerald-500'
+export default async function ManajemenAkun({ searchParams }: PageProps<'/admin/akun'>) {
+  const [users, session, query] = await Promise.all([prisma.user.findMany({ orderBy: { createdAt: 'asc' } }), getServerSession(authOptions), searchParams])
+  return <div className="space-y-6">
+    {query.saved === '1' && <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800"><CheckCircle2 size={18}/>Akun berhasil disimpan.</div>}
+    <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><h2 className="text-xl font-bold text-slate-900">Tambah administrator</h2><p className="mt-1 text-sm text-slate-500">Setiap akun memiliki akses pengelolaan konten yang sama.</p><form action={createUser} className="mt-5 grid gap-4 md:grid-cols-4"><input name="name" placeholder="Nama lengkap" className={field} required/><input name="email" type="email" placeholder="Email login" className={field} required/><input name="password" type="password" minLength={8} placeholder="Password (min. 8 karakter)" className={field} required/><SubmitButton className="rounded-xl bg-amber-500 px-5 py-3 text-sm font-bold text-emerald-950">Tambah Akun</SubmitButton></form></section>
+    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="border-b p-5"><h2 className="font-bold text-slate-900">Daftar administrator</h2></div><div className="divide-y">{users.map(user => <form action={updateUser.bind(null,user.id)} key={user.id} className="grid gap-3 p-5 lg:grid-cols-[1fr_1.2fr_1fr_auto] lg:items-end"><label className="text-xs font-semibold text-slate-500">Nama<input name="name" defaultValue={user.name ?? ''} className={`${field} mt-2`} required/></label><label className="text-xs font-semibold text-slate-500">Email<input name="email" type="email" defaultValue={user.email} className={`${field} mt-2`} required/></label><label className="text-xs font-semibold text-slate-500">Password baru (opsional)<input name="password" type="password" minLength={8} placeholder="Tidak diubah" className={`${field} mt-2`}/></label><div className="flex gap-2"><SubmitButton className="rounded-xl bg-emerald-700 px-4 py-3 text-sm font-bold text-white">Simpan</SubmitButton><ConfirmButton formAction={deleteUser.bind(null,user.id)} message={`Hapus akun ${user.email}?`} className="rounded-xl bg-red-50 px-3 text-red-600 disabled:cursor-not-allowed disabled:opacity-30"><Trash2 size={18}/></ConfirmButton></div><p className="flex items-center gap-2 text-xs text-slate-400 lg:col-span-4"><Mail size={13}/>{user.email === session?.user?.email ? 'Akun yang sedang digunakan (tidak dapat dihapus)' : users.length===1?'Admin terakhir tidak dapat dihapus':'Administrator'} <ShieldCheck size={13}/></p></form>)}</div></section>
+  </div>
+}
