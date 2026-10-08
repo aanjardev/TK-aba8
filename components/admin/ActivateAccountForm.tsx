@@ -51,9 +51,9 @@ export function ActivateAccountForm({ email }: { email: string }) {
           <label className="block text-sm font-semibold text-slate-700">
             Password baru
             <div className="relative mt-2">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+              {/* <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
                 <Lock className="h-5 w-5 text-slate-400" />
-              </div>
+              </div> */}
               <input
                 name="password"
                 type={showPassword ? "text" : "password"}
@@ -84,9 +84,9 @@ export function ActivateAccountForm({ email }: { email: string }) {
           <label className="block text-sm font-semibold text-slate-700">
             Konfirmasi password
             <div className="relative mt-2">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+              {/* <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
                 <Lock className="h-5 w-5 text-slate-400" />
-              </div>
+              </div> */}
               <input
                 name="confirmation"
                 type={showConfirmation ? "text" : "password"}
