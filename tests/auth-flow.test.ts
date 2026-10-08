@@ -25,8 +25,9 @@ test("expired token is rejected", () => {
   assert.equal(isTokenValid(token, hash, new Date(Date.now() - 1_000)), false);
 });
 
-test("password must meet the minimum security requirements", () => {
-  assert.equal(validatePassword("short"), false);
-  assert.equal(validatePassword("password"), false);
-  assert.equal(validatePassword("Password123!"), true);
+test("password may be any non-empty value", () => {
+  assert.equal(validatePassword(""), false);
+  assert.equal(validatePassword("abc"), true);
+  assert.equal(validatePassword("123"), true);
+  assert.equal(validatePassword("password sederhana"), true);
 });

@@ -36,9 +36,7 @@ export async function activateAccount(data: FormData) {
     throw new Error("Konfirmasi password tidak cocok.");
   }
   if (!validatePassword(password)) {
-    throw new Error(
-      "Password minimal 8 karakter dan harus mengandung huruf besar, huruf kecil, angka, dan simbol.",
-    );
+    throw new Error("Password wajib diisi.");
   }
 
   const user = await prisma.user.findUnique({ where: { email } });
