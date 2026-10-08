@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
 import { DEFAULT_HOME_HERO } from "../lib/home-hero";
 import { DEFAULT_REGISTRATION_SETTINGS } from "../lib/registration-settings";
 import { DEFAULT_CURRICULUM } from "../lib/academics";
@@ -126,19 +125,21 @@ Kami percaya perkembangan anak akan berjalan lebih optimal ketika sekolah dan ke
 ];
 
 async function main() {
-  const hashedPassword = await bcrypt.hash("admin123", 10);
-
   const admin = await prisma.user.upsert({
     where: { email: "admin@tkaba8.com" },
-    update: {},
+    update: {
+      status: "PENDING",
+      password: "",
+    },
     create: {
       email: "admin@tkaba8.com",
-      password: hashedPassword,
+      password: "",
       name: "Admin Utama",
+      status: "PENDING",
     },
   });
 
-  console.log("Admin user created/updated:", admin.email);
+  console.log("Admin invite created:", admin.email, "(status: PENDING)");
 
   await prisma.siteSettings.upsert({
     where: { id: "main" },

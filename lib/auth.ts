@@ -8,7 +8,11 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "admin@tkaba8.com" },
+        email: {
+          label: "Email",
+          type: "email",
+          placeholder: "admin@tkaba8.com",
+        },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
@@ -26,9 +30,14 @@ export const authOptions: NextAuthOptions = {
           throw new Error("User not found");
         }
 
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+        if (user.status !== "ACTIVE") {
+          throw new Error("Account pending");
+        }
 
-        if (!isPasswordValid) {
+        if (
+          !user.password ||
+          !(await bcrypt.compare(credentials.password, user.password))
+        ) {
           throw new Error("Invalid password");
         }
 

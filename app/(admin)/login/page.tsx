@@ -3,13 +3,18 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Lock, Mail, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Lock, Mail, ArrowRight, Eye, EyeOff, Send } from "lucide-react";
+import { requestActivation } from "../activation/actions";
+import { requestPasswordReset } from "../reset-password/actions";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [activationEmail, setActivationEmail] = useState("");
+  const [resetEmail, setResetEmail] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [status, setStatus] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -17,7 +22,7 @@ export default function AdminLogin() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-    
+
     try {
       const res = await signIn("credentials", {
         email,
@@ -25,16 +30,52 @@ export default function AdminLogin() {
         redirect: false,
       });
 
-      if (res?.error) {
+      if (res?.error === "Account pending") {
+        setError(
+          "Akun belum aktif. Gunakan tombol Aktivasi Akun di bawah untuk membuat password.",
+        );
+      } else if (res?.error) {
         setError("Email atau kata sandi salah");
       } else {
-        router.push("/admin"); // Arahkan ke dashboard admin
+        router.push("/admin");
         router.refresh();
       }
     } catch {
       setError("Terjadi kesalahan sistem");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const activationAction = async (formData: FormData) => {
+    setError("");
+    try {
+      await requestActivation(formData);
+      setStatus(
+        "Link aktivasi telah dikirim ke email. Periksa folder spam jika tidak muncul.",
+      );
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Tidak dapat mengirim link aktivasi. Hubungi administrator.",
+      );
+    }
+  };
+
+  const resetAction = async (formData: FormData) => {
+    setError("");
+    try {
+      await requestPasswordReset(formData);
+      setStatus(
+        "Link reset password telah dikirim ke email. Periksa folder spam jika tidak muncul.",
+      );
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Tidak dapat mengirim link reset password. Hubungi administrator.",
+      );
     }
   };
 
@@ -50,8 +91,12 @@ export default function AdminLogin() {
           <div className="w-16 h-16 bg-gradient-to-tr from-emerald-500 to-teal-400 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/20 transform hover:scale-105 transition-transform duration-300">
             <Lock className="text-white" size={32} />
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 mb-2 tracking-tight">Admin Portal</h1>
-          <p className="text-slate-500 font-medium">Masuk untuk mengelola data website sekolah</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 mb-2 tracking-tight">
+            Admin Portal
+          </h1>
+          <p className="text-slate-500 font-medium">
+            Masuk untuk mengelola data website sekolah
+          </p>
         </div>
 
         <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl shadow-slate-200/60 border border-white/50">
@@ -62,9 +107,11 @@ export default function AdminLogin() {
                 {error}
               </div>
             )}
-            
+
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Email Admin</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Email Admin
+              </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none transition-colors group-focus-within:text-emerald-500">
                   <Mail className="h-5 w-5 text-slate-400 group-focus-within:text-emerald-500 transition-colors" />
@@ -81,7 +128,9 @@ export default function AdminLogin() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Kata Sandi</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Kata Sandi
+              </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none transition-colors group-focus-within:text-emerald-500">
                   <Lock className="h-5 w-5 text-slate-400 group-focus-within:text-emerald-500 transition-colors" />
@@ -116,15 +165,22 @@ export default function AdminLogin() {
                   type="checkbox"
                   className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-slate-300 rounded cursor-pointer transition-colors"
                 />
-                <label htmlFor="remember-me" className="ml-2.5 block text-sm font-medium text-slate-600 cursor-pointer group-hover:text-slate-800 transition-colors">
+                <label
+                  htmlFor="remember-me"
+                  className="ml-2.5 block text-sm font-medium text-slate-600 cursor-pointer group-hover:text-slate-800 transition-colors"
+                >
                   Ingat saya
                 </label>
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-semibold text-emerald-600 hover:text-emerald-500 transition-colors">
+                <button
+                  type="button"
+                  onClick={() => setStatus("")}
+                  className="font-semibold text-emerald-600 hover:text-emerald-500 transition-colors"
+                >
                   Lupa sandi?
-                </a>
+                </button>
               </div>
             </div>
 
@@ -134,9 +190,58 @@ export default function AdminLogin() {
               className="w-full flex items-center justify-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-emerald-500/30 text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 hover:shadow-emerald-500/40 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed disabled:active:scale-100 mt-2"
             >
               {isLoading ? "Memproses..." : "Masuk ke Dashboard"}
-              {!isLoading && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
+              {!isLoading && (
+                <ArrowRight
+                  size={18}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
+              )}
             </button>
           </form>
+
+          <div className="mt-6 space-y-3 border-t border-slate-200 pt-6">
+            <form action={activationAction} className="flex gap-2">
+              <input
+                type="email"
+                name="email"
+                value={activationEmail}
+                onChange={(e) => setActivationEmail(e.target.value)}
+                required
+                placeholder="Email akun yang belum aktif"
+                className="field flex-1 min-w-0"
+              />
+              <button
+                type="submit"
+                className="rounded-xl bg-amber-500 px-3 py-3 text-xs font-bold text-slate-900 hover:bg-amber-400"
+                title="Kirim link aktivasi"
+              >
+                <Send size={16} />
+              </button>
+            </form>
+            <form action={resetAction} className="flex gap-2">
+              <input
+                type="email"
+                name="email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                required
+                placeholder="Email akun yang sudah aktif"
+                className="field flex-1 min-w-0"
+              />
+              <button
+                type="submit"
+                className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                title="Reset password"
+              >
+                Reset
+              </button>
+            </form>
+            {status && (
+              <p className="rounded-xl bg-emerald-50 p-3 text-xs font-semibold text-emerald-800">
+                {status}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

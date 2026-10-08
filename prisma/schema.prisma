@@ -8,12 +8,19 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                        String    @id @default(cuid())
+  email                     String    @unique
+  password                  String    @default("")
+  name                      String?
+  status                    UserStatus @default(PENDING)
+  activationToken           String?
+  activationTokenExpiresAt  DateTime?
+  resetToken                String?
+  resetTokenExpiresAt       DateTime?
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+
+  @@index([status])
 }
 
 model SiteSettings {
@@ -228,6 +235,11 @@ model FacilitySettings {
   facilities   Json
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
 }
 
 enum NewsStatus {
