@@ -3,15 +3,13 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Lock, Mail, ArrowRight, Eye, EyeOff, Send } from "lucide-react";
-import { requestActivation } from "../activation/actions";
-import { requestPasswordReset } from "../reset-password/actions";
+import { Lock, Mail, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { checkPendingActivation } from "../activation/actions";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [activationEmail, setActivationEmail] = useState("");
-  const [resetEmail, setResetEmail] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
@@ -49,32 +47,15 @@ export default function AdminLogin() {
 
   const activationAction = async (formData: FormData) => {
     setError("");
+    setStatus("");
     try {
-      await requestActivation(formData);
-      setStatus(
-        "Link aktivasi telah dikirim ke email. Periksa folder spam jika tidak muncul.",
-      );
+      const pendingEmail = await checkPendingActivation(formData);
+      router.push(`/activate?email=${encodeURIComponent(pendingEmail)}`);
     } catch (error) {
       setError(
         error instanceof Error
           ? error.message
-          : "Tidak dapat mengirim link aktivasi. Hubungi administrator.",
-      );
-    }
-  };
-
-  const resetAction = async (formData: FormData) => {
-    setError("");
-    try {
-      await requestPasswordReset(formData);
-      setStatus(
-        "Link reset password telah dikirim ke email. Periksa folder spam jika tidak muncul.",
-      );
-    } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Tidak dapat mengirim link reset password. Hubungi administrator.",
+          : "Email tidak terdaftar atau akun sudah aktif.",
       );
     }
   };
@@ -176,10 +157,10 @@ export default function AdminLogin() {
               <div className="text-sm">
                 <button
                   type="button"
-                  onClick={() => setStatus("")}
+                  onClick={() => setStatus("aktivasi")}
                   className="font-semibold text-emerald-600 hover:text-emerald-500 transition-colors"
                 >
-                  Lupa sandi?
+                  Aktivasi akun?
                 </button>
               </div>
             </div>
@@ -200,43 +181,29 @@ export default function AdminLogin() {
           </form>
 
           <div className="mt-6 space-y-3 border-t border-slate-200 pt-6">
-            <form action={activationAction} className="flex gap-2">
-              <input
-                type="email"
-                name="email"
-                value={activationEmail}
-                onChange={(e) => setActivationEmail(e.target.value)}
-                required
-                placeholder="Email akun yang belum aktif"
-                className="field flex-1 min-w-0"
-              />
-              <button
-                type="submit"
-                className="rounded-xl bg-amber-500 px-3 py-3 text-xs font-bold text-slate-900 hover:bg-amber-400"
-                title="Kirim link aktivasi"
-              >
-                <Send size={16} />
-              </button>
-            </form>
-            <form action={resetAction} className="flex gap-2">
-              <input
-                type="email"
-                name="email"
-                value={resetEmail}
-                onChange={(e) => setResetEmail(e.target.value)}
-                required
-                placeholder="Email akun yang sudah aktif"
-                className="field flex-1 min-w-0"
-              />
-              <button
-                type="submit"
-                className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-xs font-bold text-slate-700 hover:bg-slate-50"
-                title="Reset password"
-              >
-                Reset
-              </button>
-            </form>
-            {status && (
+            {status === "aktivasi" && (
+              <form action={activationAction} className="space-y-3">
+                <label className="block text-sm font-semibold text-slate-700">
+                  Email akun pending
+                  <input
+                    type="email"
+                    name="email"
+                    value={activationEmail}
+                    onChange={(e) => setActivationEmail(e.target.value)}
+                    required
+                    placeholder="Masukkan email akun"
+                    className="field mt-2"
+                  />
+                </label>
+                <button
+                  type="submit"
+                  className="w-full rounded-xl bg-amber-500 px-4 py-3 text-sm font-bold text-slate-900 hover:bg-amber-400"
+                >
+                  Lanjutkan aktivasi
+                </button>
+              </form>
+            )}
+            {status && status !== "aktivasi" && (
               <p className="rounded-xl bg-emerald-50 p-3 text-xs font-semibold text-emerald-800">
                 {status}
               </p>

@@ -1,13 +1,17 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { activateAccount } from "./actions";
+import { prisma } from "@/lib/prisma";
+import { activateAccount } from "../activation/actions";
 
 export default async function ActivateAccountPage({
   searchParams,
 }: PageProps<"/activate">) {
   const params = await searchParams;
-  const token = typeof params?.token === "string" ? params.token : "";
-  if (!token) redirect("/login?activation=invalid");
+  const email = typeof params?.email === "string" ? params.email : "";
+  if (!email) redirect("/login?activation=invalid");
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user || user.status !== "PENDING") redirect("/login?activation=invalid");
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-12">
@@ -20,16 +24,12 @@ export default async function ActivateAccountPage({
         </p>
 
         <form action={activateAccount} className="mt-6 space-y-4">
-          <input type="hidden" name="token" value={token} />
+          <input type="hidden" name="email" value={email} />
           <label className="block text-sm font-semibold text-slate-700">
             Email
-            <input
-              name="email"
-              type="email"
-              required
-              className="field mt-2"
-              placeholder="admin@tkaba8.com"
-            />
+            <div className="mt-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+              {email}
+            </div>
           </label>
           <label className="block text-sm font-semibold text-slate-700">
             Password baru
